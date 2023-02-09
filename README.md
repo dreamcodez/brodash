@@ -1,2 +1,2 @@
 # brodash
-functional programming with golang generics
+functional programming with golang generics -- lock free
