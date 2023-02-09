@@ -15,20 +15,20 @@ var _ = Describe("lists", func() {
 		shouldMapPlusOneAdder(lists.Map[int, int])()
 	})
 
-	Context("ParMap(...)", func() {
-		shouldMapPlusOneAdder(lists.ParMap[int, int])()
-	})
-
 	Context("MapWithError(...)", func() {
 		shouldMapAtoi(lists.MapWithError[string, int])()
 	})
 
-	PContext("ParMapWithError(...)", func() {
+	Context("MapWithResults(...)", func() {
+		shouldMapAtoiResults(lists.MapWithResults[string, int])()
+	})
+
+	Context("ParMap(...)", func() {
+		shouldMapPlusOneAdder(lists.ParMap[int, int])()
 	})
 
 	Context("ParMapWithResults(...)", func() {
 		shouldMapAtoiResults(lists.ParMapWithResults[string, int])()
-
 	})
 })
 
