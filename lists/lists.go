@@ -15,6 +15,15 @@ func Map[In any, Out any](lst []In, fn MapFn[In, Out]) []Out {
 	return rval
 }
 
+// MapWithResults maps the fn to the array and will return the results after all items have run
+func MapWithResults[In any, Out any](lst []In, fn MapErrFn[In, Out]) result.Results[Out] {
+	var out result.Results[Out]
+	for _, val := range lst {
+		out = append(out, result.NewResult(fn(val)))
+	}
+	return out
+}
+
 // MapWithError maps the fn to the array and will return error on first failure
 func MapWithError[In any, Out any](lst []In, fn MapErrFn[In, Out]) ([]Out, error) {
 	var out []Out
