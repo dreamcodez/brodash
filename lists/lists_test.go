@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/dreamcodez/brodash/lists"
+	"github.com/dreamcodez/brodash/result"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"golang.org/x/exp/slices"
@@ -26,9 +27,8 @@ var _ = Describe("lists", func() {
 	})
 
 	Context("ParMapWithResults(...)", func() {
-		shouldMapAtoi(func(lst []string, fn lists.MapErrFn[string, int]) ([]int, error) {
-			return lists.ParMapWithResults(lst, fn).Get()
-		})()
+		shouldMapAtoiResults(lists.ParMapWithResults[string, int])()
+
 	})
 })
 
@@ -60,5 +60,13 @@ func shouldMapAtoi(fn func(lst []string, fn lists.MapErrFn[string, int]) ([]int,
 
 			Expect(actual).To(Equal(expected))
 		})
+	}
+}
+
+func shouldMapAtoiResults(fn func(lst []string, fn lists.MapErrFn[string, int]) result.Results[int]) func() {
+	return func() {
+		shouldMapAtoi(func(lst []string, fn lists.MapErrFn[string, int]) ([]int, error) {
+			return lists.ParMapWithResults(lst, fn).Get()
+		})()
 	}
 }
