@@ -11,48 +11,54 @@ import (
 
 var _ = Describe("lists", func() {
 	Context("Map(...)", func() {
-		It("should be able to map a function which adds one to each number over a list of integers", func() {
-			lst := []int{1, 2, 3}
-			expected := []int{2, 3, 4}
-
-			actual := lists.Map(lst, func(i int) int {
-				return i + 1
-			})
-			Expect(actual).To(Equal(expected))
-		})
+		shouldMapPlusOneAdder(lists.Map[int, int])()
 	})
 
 	Context("ParMap(...)", func() {
+		shouldMapPlusOneAdder(lists.ParMap[int, int])()
+	})
+
+	Context("MapWithError(...)", func() {
+		shouldMapAtoi(lists.MapWithError[string, int])()
+	})
+
+	PContext("ParMapWithError(...)", func() {
+	})
+
+	Context("ParMapWithResults(...)", func() {
+		shouldMapAtoi(func(lst []string, fn lists.MapErrFn[string, int]) ([]int, error) {
+			return lists.ParMapWithResults(lst, fn).Get()
+		})()
+	})
+})
+
+func shouldMapPlusOneAdder(fn func(lst []int, fn lists.MapFn[int, int]) []int) func() {
+	return func() {
 		It("should be able to map a function which adds one to each number over a list of integers", func() {
 			lst := []int{1, 2, 3}
 			expected := []int{2, 3, 4}
 
-			actual := lists.Map(lst, func(i int) int {
+			actual := fn(lst, func(i int) int {
 				return i + 1
 			})
+			slices.Sort(actual)
+
 			Expect(actual).To(Equal(expected))
 		})
-	})
+	}
+}
 
-	Context("MapWithError(...)", func() {
+func shouldMapAtoi(fn func(lst []string, fn lists.MapErrFn[string, int]) ([]int, error)) func() {
+	return func() {
 		It("should be able to map Atoi over a list of string and produce a list of integers", func() {
 			lst := []string{"1", "2", "3"}
 			expected := []int{1, 2, 3}
 
-			actual, err := lists.MapWithError(lst, strconv.Atoi)
-			Expect(err).To(BeNil())
-			Expect(actual).To(Equal(expected))
-		})
-	})
-
-	Context("ParMapWithResults(...)", func() {
-		It("should be able to map Atoi over a list of string and produce a list of integers", func() {
-			lst := []string{"1", "2", "3"}
-			expected := []int{1, 2, 3}
-			actual, err := lists.ParMapWithResults(lst, strconv.Atoi).Get()
+			actual, err := fn(lst, strconv.Atoi)
 			Expect(err).To(BeNil())
 			slices.Sort(actual)
+
 			Expect(actual).To(Equal(expected))
 		})
-	})
-})
+	}
+}

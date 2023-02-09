@@ -4,8 +4,11 @@ import (
 	"github.com/dreamcodez/brodash/result"
 )
 
+type MapFn[In any, Out any] func(In) Out
+type MapErrFn[In any, Out any] func(In) (Out, error)
+
 // Map maps the fn to the array
-func Map[In any, Out any](lst []In, fn func(val In) Out) []Out {
+func Map[In any, Out any](lst []In, fn MapFn[In, Out]) []Out {
 	rval, _ := MapWithError(lst, func(val In) (Out, error) {
 		return fn(val), nil
 	})
@@ -13,7 +16,7 @@ func Map[In any, Out any](lst []In, fn func(val In) Out) []Out {
 }
 
 // MapWithError maps the fn to the array and will return error on first failure
-func MapWithError[In any, Out any](lst []In, fn func(val In) (Out, error)) ([]Out, error) {
+func MapWithError[In any, Out any](lst []In, fn MapErrFn[In, Out]) ([]Out, error) {
 	var out []Out
 	for _, val := range lst {
 		rval, err := fn(val)
@@ -26,7 +29,7 @@ func MapWithError[In any, Out any](lst []In, fn func(val In) (Out, error)) ([]Ou
 }
 
 // ParMap maps the fn to the array in parallel -- ordering is not guaranteed
-func ParMap[In any, Out any](lst []In, fn func(In) Out) []Out {
+func ParMap[In any, Out any](lst []In, fn MapFn[In, Out]) []Out {
 	results := ParMapWithResults(lst, func(val In) (Out, error) {
 		return fn(val), nil
 	})
@@ -34,7 +37,7 @@ func ParMap[In any, Out any](lst []In, fn func(In) Out) []Out {
 }
 
 // ParMapWithResults maps the fn to the array in parallel and will return a list of results -- ordering is not guaranteed
-func ParMapWithResults[In any, Out any](lst []In, fn func(In) (Out, error)) result.Results[Out] {
+func ParMapWithResults[In any, Out any](lst []In, fn MapErrFn[In, Out]) result.Results[Out] {
 	queue := make(chan result.Result[Out])
 	var out result.Results[Out]
 	for _, val := range lst {
