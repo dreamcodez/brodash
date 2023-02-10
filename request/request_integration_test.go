@@ -15,9 +15,9 @@ var _ = Describe("Request Integration", func() {
 	Context("ParReq(...)", func() {
 		It("should request 3 planets on swapi successfully", func() {
 			reqs := []*resty.Request{
-				mkReq("GET", "https://swapi.dev/api/planets/1"),
-				mkReq("GET", "https://swapi.dev/api/planets/2"),
-				mkReq("GET", "https://swapi.dev/api/planets/3"),
+				request.R("GET", "https://swapi.dev/api/planets/1"),
+				request.R("GET", "https://swapi.dev/api/planets/2"),
+				request.R("GET", "https://swapi.dev/api/planets/3"),
 			}
 			results := request.ParReq(reqs)
 			slices.SortFunc(results, func(a, b result.Result[*resty.Response]) bool {
@@ -31,11 +31,3 @@ var _ = Describe("Request Integration", func() {
 		})
 	})
 })
-
-func mkReq(method string, url string) *resty.Request {
-	rc := request.Client
-	req := rc.NewRequest()
-	req.Method = "GET"
-	req.URL = url
-	return req
-}

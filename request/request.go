@@ -8,6 +8,13 @@ import (
 
 var Client = resty.New()
 
+func R(method string, url string) *resty.Request {
+	req := Client.R()
+	req.Method = "GET"
+	req.URL = url
+	return req
+}
+
 func ParReq(requests []*resty.Request) result.Results[*resty.Response] {
 	return ParReqWithRestyClient(Client, requests)
 }
