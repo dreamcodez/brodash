@@ -19,16 +19,16 @@ var _ = Describe("Request Integration", func() {
 				request.R("GET", "https://swapi.dev/api/planets/3"),
 			}
 
-			results, err := request.ParReq(reqs).Get()
+			responses, err := request.ParReq(reqs).Get()
 			Expect(err).To(BeNil())
-			slices.SortFunc(results, func(a, b *resty.Response) bool {
+			slices.SortFunc(responses, func(a, b *resty.Response) bool {
 				return strings.Compare(a.Request.URL, b.Request.URL) == -1
 			})
 
-			Expect(len(results)).To(Equal(3))
-			Expect(results[0].Body()).To(ContainSubstring(`"name":"Tatooine"`))
-			Expect(results[1].Body()).To(ContainSubstring(`"name":"Alderaan"`))
-			Expect(results[2].Body()).To(ContainSubstring(`"name":"Yavin IV"`))
+			Expect(len(responses)).To(Equal(3))
+			Expect(responses[0].Body()).To(ContainSubstring(`"name":"Tatooine"`))
+			Expect(responses[1].Body()).To(ContainSubstring(`"name":"Alderaan"`))
+			Expect(responses[2].Body()).To(ContainSubstring(`"name":"Yavin IV"`))
 		})
 	})
 })
