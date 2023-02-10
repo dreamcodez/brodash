@@ -13,13 +13,7 @@ import (
 var _ = Describe("Request Integration", func() {
 	Context("ParReq(...)", func() {
 		Context("while requesting 3 planets on swapi", func() {
-			reqs := []*resty.Request{
-				request.R("GET", "https://swapi.dev/api/planets/1"),
-				request.R("GET", "https://swapi.dev/api/planets/2"),
-				request.R("GET", "https://swapi.dev/api/planets/3"),
-			}
-
-			results := request.ParReq[map[string]interface{}](reqs)
+			results := request.ParReq[map[string]interface{}](swapiRequests())
 			results.Sort(func(a, b result.Result[map[string]interface{}]) bool {
 				return strings.Compare(a.Val["name"].(string), b.Val["name"].(string)) == -1
 			})
@@ -42,17 +36,10 @@ var _ = Describe("Request Integration", func() {
 	})
 	Context("ParRawReq(...)", func() {
 		Context("while requesting 3 planets on swapi", func() {
-			reqs := []*resty.Request{
-				request.R("GET", "https://swapi.dev/api/planets/1"),
-				request.R("GET", "https://swapi.dev/api/planets/2"),
-				request.R("GET", "https://swapi.dev/api/planets/3"),
-			}
-
-			results := request.ParReqRaw(reqs)
+			results := request.ParReqRaw(swapiRequests())
 			results.Sort(func(a, b result.Result[*resty.Response]) bool {
 				return strings.Compare(a.Val.Request.URL, b.Val.Request.URL) == -1
 			})
-
 			responses, err := results.Get()
 
 			It("the response should be successful", func() {
@@ -72,3 +59,11 @@ var _ = Describe("Request Integration", func() {
 		})
 	})
 })
+
+func swapiRequests() []*resty.Request {
+	return []*resty.Request{
+		request.R("GET", "https://swapi.dev/api/planets/1"),
+		request.R("GET", "https://swapi.dev/api/planets/2"),
+		request.R("GET", "https://swapi.dev/api/planets/3"),
+	}
+}
