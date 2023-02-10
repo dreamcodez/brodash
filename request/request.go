@@ -15,11 +15,30 @@ func R(method string, url string) *resty.Request {
 	return req
 }
 
-func ParReq(requests []*resty.Request) result.Results[*resty.Response] {
-	return ParReqWithRestyClient(Client, requests)
+func ParReq[Response any](requests []*resty.Request) result.Results[Response] {
+	return ParReqWithRestyClient[Response](Client, requests)
 }
 
-func ParReqWithRestyClient(rc *resty.Client, requests []*resty.Request) result.Results[*resty.Response] {
+func ParReqWithRestyClient[Out any](rc *resty.Client, requests []*resty.Request) result.Results[Out] {
+	return lists.ParMapWithResults(requests, func(request *resty.Request) (Out, error) {
+		var out Out
+
+		request.SetResult(out)
+		resp, err := request.Send()
+		if err != nil {
+			return out, err
+		}
+
+		out = *resp.Result().(*Out)
+		return out, nil
+	})
+}
+
+func ParReqRaw(requests []*resty.Request) result.Results[*resty.Response] {
+	return ParReqRawWithRestyClient(Client, requests)
+}
+
+func ParReqRawWithRestyClient(rc *resty.Client, requests []*resty.Request) result.Results[*resty.Response] {
 	return lists.ParMapWithResults(requests, func(request *resty.Request) (*resty.Response, error) {
 		return request.Send()
 	})
