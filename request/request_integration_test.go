@@ -18,6 +18,7 @@ var _ = Describe("Request Integration", func() {
 				request.R("GET", "https://swapi.dev/api/planets/2"),
 				request.R("GET", "https://swapi.dev/api/planets/3"),
 			}
+
 			responses, err := request.ParReq[map[string]interface{}](reqs).Get()
 			slices.SortFunc(responses, func(a, b map[string]interface{}) bool {
 				return strings.Compare(a["name"].(string), b["name"].(string)) == -1
