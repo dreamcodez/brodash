@@ -4,10 +4,10 @@ import (
 	"strings"
 
 	"github.com/dreamcodez/brodash/request"
+	"github.com/dreamcodez/brodash/result"
 	"github.com/go-resty/resty/v2"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"golang.org/x/exp/slices"
 )
 
 var _ = Describe("Request Integration", func() {
@@ -19,10 +19,11 @@ var _ = Describe("Request Integration", func() {
 				request.R("GET", "https://swapi.dev/api/planets/3"),
 			}
 
-			responses, err := request.ParReq[map[string]interface{}](reqs).Get()
-			slices.SortFunc(responses, func(a, b map[string]interface{}) bool {
-				return strings.Compare(a["name"].(string), b["name"].(string)) == -1
+			results := request.ParReq[map[string]interface{}](reqs)
+			results.Sort(func(a, b result.Result[map[string]interface{}]) bool {
+				return strings.Compare(a.Val["name"].(string), b.Val["name"].(string)) == -1
 			})
+			responses, err := results.Get()
 
 			It("the response should be successful", func() {
 				Expect(err).To(BeNil())
@@ -46,10 +47,13 @@ var _ = Describe("Request Integration", func() {
 				request.R("GET", "https://swapi.dev/api/planets/2"),
 				request.R("GET", "https://swapi.dev/api/planets/3"),
 			}
-			responses, err := request.ParReqRaw(reqs).Get()
-			slices.SortFunc(responses, func(a, b *resty.Response) bool {
-				return strings.Compare(a.Request.URL, b.Request.URL) == -1
+
+			results := request.ParReqRaw(reqs)
+			results.Sort(func(a, b result.Result[*resty.Response]) bool {
+				return strings.Compare(a.Val.Request.URL, b.Val.Request.URL) == -1
 			})
+
+			responses, err := results.Get()
 
 			It("the response should be successful", func() {
 				Expect(err).To(BeNil())

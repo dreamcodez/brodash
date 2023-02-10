@@ -1,8 +1,19 @@
 package result
 
-import "github.com/hashicorp/go-multierror"
+import (
+	"github.com/hashicorp/go-multierror"
+	"golang.org/x/exp/slices"
+)
 
 type Results[T any] []Result[T]
+
+func (rs Results[T]) Unwrap() []Result[T] {
+	return []Result[T](rs)
+}
+
+func (rs Results[T]) Sort(less func(a, b Result[T]) bool) {
+	slices.SortFunc(rs.Unwrap(), less)
+}
 
 func (rs Results[T]) Get() ([]T, error) {
 	err := rs.MultiError()
